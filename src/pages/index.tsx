@@ -1,9 +1,10 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
+import { parseCookies } from 'nookies';
 import { FormEvent, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/Home.module.css';
 
-const Home: NextPage = () => {
+function Home() {
   const { signIn } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -30,3 +31,20 @@ const Home: NextPage = () => {
 }
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const cookies = parseCookies(ctx);
+
+  if (cookies['nextauth.token']) {
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}
